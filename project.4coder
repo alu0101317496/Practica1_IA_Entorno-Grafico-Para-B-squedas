@@ -1,0 +1,94 @@
+version(1);
+
+project_name = "New Project";
+
+patterns =
+{
+    "*.c",
+    "*.cpp",
+    "*.cc",
+    "*.jai",
+    "*.odin",
+    "*.zig",
+    "*.h",
+    "*.inc",
+    "*.bat",
+    "*.sh",
+    "*.4coder",
+    "*.txt",
+    "include/*.h",
+    "source/*.cc"
+};
+
+blacklist_patterns =
+{
+    ".*",
+};
+
+load_paths =
+{
+    {
+        { {"."}, .recursive = true, .relative = true }, .os = "win"
+    },
+};
+
+command_list =
+{
+    {
+        .name = "build",
+        .out = "*compiling*",
+        .footer_panel = true,
+        .save_dirty_files = true,
+        .cursor_at_end = false,
+        .cmd =
+        {
+            { "build.bat", .os = "win" },
+            { "echo Linux build command not implemented for 4coder project.", .os = "linux" },
+        },
+    },
+    
+    {
+        .name = "run",
+        .out = "*running*",
+        .footer_panel = true,
+        .save_dirty_files = true,
+        .cursor_at_end = false,
+        .cmd =
+        {
+            { "exec\main.exe", .os = "win" },
+            { "echo Linux run command not implemented for 4coder project.", .os = "linux" },
+        },
+    },
+    
+    {
+        .name = "compile_for_debug",
+        .out = "*compiling for debugger*",
+        .footer_panel = true,
+        .save_dirty_files = true,
+        .cursor_at_end = false,
+        .cmd =
+        {
+            { "diebug.bat", .os = "win" },
+            { "echo Linux run command not implemented for 4coder project.", .os = "linux" },
+        },
+    },
+    
+    {
+        .name = "debug",
+        .out = "*debugging*",
+        .footer_panel = true,
+        .save_dirty_files = true,
+        .cursor_at_end = false,
+        .cmd =
+        {
+            { "Debug", .os = "win" },
+            { "echo Linux run command not implemented for 4coder project.", .os = "linux" },
+        },
+    },
+    
+};
+
+fkey_command[1] = "build";
+fkey_command[2] = "run";
+fkey_command[3] = "compile_for_debug";
+fkey_command[5] = "debug";
