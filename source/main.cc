@@ -5,10 +5,22 @@
 //
        //============================================================================== */
 #include <windows.h>
+#include <stdint.h>
 
 #define internal          static //Internal variables or functions specific to the brackets they're inside
 #define local_persist     static
 #define global_variable   static
+
+typedef uint8_t uint8;
+typedef uint16_t uint16;
+typedef uint32_t uint32;
+typedef uint64_t uint64;
+
+
+typedef int8_t int8;
+typedef int16_t int16;
+typedef int32_t int32;
+typedef int64_t int64;
 
 
 
@@ -16,8 +28,50 @@
 global_variable bool Running;
 global_variable BITMAPINFO BitmapInfo;
 global_variable void *BitmapMemory;
-global_variable HBITMAP BitmapHandle;
-global_variable HDC BitmapDeviceContext;
+global_variable int BitmapWidth;
+global_variable int BitmapHeight;
+global_variable int BytesPerPixel = 4;
+
+
+internal void
+RenderWeirdGradient(int XOffset, int YOffset)
+{
+    int Width = BitmapWidth;
+    int Height = BitmapHeight;
+    
+    
+    int Pitch = Width*BytesPerPixel;
+    uint8 *Row = (uint8 *)BitmapMemory;
+    
+    
+    for(int Y = 0; Y < BitmapHeight; ++Y)
+    {
+        uint8 *Pixel = (uint8 *)Row;
+        for(int X = 0; X < BitmapWidth; ++X)
+        {
+            /*
+--                  0  1  2  3
+ --Pixel in memory: BB GG RR xx
+*/
+            
+            *Pixel = (uint8)(X+XOffset); // BLUE
+            ++Pixel;
+            
+            *Pixel = (uint8)(Y+YOffset); // GREEN
+            ++Pixel;
+            
+            *Pixel = 0; // RED
+            ++Pixel;
+            
+            *Pixel = 0; //xx
+            ++Pixel;
+            
+        }
+        
+        Row+=Pitch;
+    }
+}
+
 
 internal void
 Win32ResizeDIBSection(int Width, int Height)
@@ -39,44 +93,55 @@ typedef struct tagBITMAPINFOHEADER {
 } BITMAPINFOHEADER, *PBITMAPINFOHEADER;
 */
     
-    if(BitmapHandle)
+    // TODO(Seriuusly): Bulletproof this
+    //Free now or later or idk.
+    
+    if(BitmapMemory)
     {
-        DeleteObject(BitmapHandle);
+        VirtualFree(BitmapMemory, 0, MEM_RELEASE);
     }
     
-    if(!BitmapDeviceContext)
-    {
-        BitmapDeviceContext = CreateCompatibleDC(0);
-    }
+    BitmapWidth = Width;
+    BitmapHeight = Height;
     
-    BITMAPINFO BitmapInfo = {};
     BitmapInfo.bmiHeader.biSize = sizeof(BitmapInfo.bmiHeader);
-    BitmapInfo.bmiHeader.biWidth = Width;
-    BitmapInfo.bmiHeader.biHeight = Height;
+    BitmapInfo.bmiHeader.biWidth = BitmapWidth;
+    BitmapInfo.bmiHeader.biHeight = -BitmapHeight;
     BitmapInfo.bmiHeader.biPlanes = 1;
     BitmapInfo.bmiHeader.biBitCount = 32;
     BitmapInfo.bmiHeader.biCompression = BI_RGB;
-    BitmapInfo.bmiHeader.biSizeImage = 0;
-    BitmapInfo.bmiHeader.biXPelsPerMeter = 0;
-    BitmapInfo.bmiHeader.biYPelsPerMeter = 0;
-    BitmapInfo.bmiHeader.biClrUsed = 0;
-    BitmapInfo.bmiHeader.biClrImportant = 0;
     
-    // TODO(Seriuusly): Free after if the creation succeded, if it fails user de old DIB
+    int BytesPerPixel = 4;
+    int BitmapMemorySize = (BitmapWidth*BitmapHeight)*BytesPerPixel;
     
-    HBITMAP BitmapHandle = CreateDIBSection(BitmapDeviceContext,
-                                            &BitmapInfo,
-                                            DIB_RGB_COLORS,
-                                            &BitmapMemory,
-                                            0, 0);
+    // Returns pages for the process inside memory.
+    BitmapMemory = VirtualAlloc(0, BitmapMemorySize, MEM_COMMIT, PAGE_READWRITE); 
+    
+    RenderWeirdGradient(0,0);
+    
+    
+    
 }
 
 internal void
-Win32UpdateWindow(HDC DeviceContext, int X, int Y, int Width, int Height)
+Win32UpdateWindow(HDC DeviceContext, RECT *WindowRect, int X, int Y, int Width, int Height)
 {
+    int WindowWitdh = WindowRect->right - WindowRect->left;
+    int WindowHeight = WindowRect->bottom - WindowRect->top;
+    
+    /*
+--
+--
+--
+--
+*/
+    
     StretchDIBits(DeviceContext,
+                  /*
                   X, Y, Width, Height,
-                  X, Y, Width, Height,
+                  X, Y, Width, Height,*/
+                  0, 0, BitmapWidth, BitmapHeight,
+                  0, 0, WindowWitdh, WindowHeight,
                   BitmapMemory,
                   &BitmapInfo,
                   DIB_RGB_COLORS, SRCCOPY);
@@ -97,7 +162,7 @@ MainWindowCallback(HWND Window,
             RECT ClientRect;
             GetClientRect(Window, &ClientRect);
             int Width = ClientRect.right - ClientRect.left;
-            int Height = ClientRect.top - ClientRect.bottom;;
+            int Height = ClientRect.bottom - ClientRect.top;
             Win32ResizeDIBSection(Width, Height);
             OutputDebugStringA("WM_SIZE\n");
         }break;
@@ -124,13 +189,17 @@ MainWindowCallback(HWND Window,
         
         case WM_PAINT:
         {
+            OutputDebugStringA("WM_PAINT\n");
             PAINTSTRUCT Paint;
             HDC DeviceContext = BeginPaint(Window, &Paint);
             int X = Paint.rcPaint.left;
             int Y = Paint.rcPaint.top;
-            int Width = Paint.rcPaint.left - Paint.rcPaint.right;
+            int Width = Paint.rcPaint.right - Paint.rcPaint.left;
             int Height = Paint.rcPaint.bottom - Paint.rcPaint.top;
-            Win32UpdateWindow(DeviceContext, X, Y, Width, Height);
+            
+            RECT ClientRect;
+            GetClientRect(Window, &ClientRect);
+            Win32UpdateWindow(DeviceContext, &ClientRect, X, Y, Width, Height);
             
             EndPaint(Window, &Paint);
             
@@ -165,7 +234,6 @@ int CALLBACK WinMain(
     WindowClass.hInstance = Instance;
     //WINDOW ICON
     //WindowClass.hIcon = ;          
-    WindowClass.lpszMenuName = "GraphicLoader";
     WindowClass.lpszClassName = "Graphic loader windows class";
     
     if(RegisterClass(&WindowClass))
@@ -190,7 +258,7 @@ int CALLBACK WinMain(
             Running = true;
             while(Running)
             {
-                BOOL MessageResult = GetMessage(&Message, WindowHandle,0,0);
+                BOOL MessageResult = GetMessage(&Message, 0, 0, 0);
                 
                 if (MessageResult > 0)
                 {
@@ -204,6 +272,7 @@ int CALLBACK WinMain(
             }
         }
     }
+    
     else
     {
         // TODO(Seriuusly): LOGGING
