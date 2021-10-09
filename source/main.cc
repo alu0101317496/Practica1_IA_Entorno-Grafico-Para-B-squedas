@@ -2,7 +2,6 @@
  // @Creator: Lucas Hernández Abreu
 // @Name: main.cc
 // @Purpose: Creating the graphical interface talking with the API of Windows.
-//
        //============================================================================== */
 #include <windows.h>
 #include <stdint.h>
@@ -36,23 +35,18 @@ global_variable int BytesPerPixel = 4;
 internal void
 RenderWeirdGradient(int XOffset, int YOffset)
 {
-    int Width = BitmapWidth;
-    int Height = BitmapHeight;
-    
-    
-    int Pitch = Width*BytesPerPixel;
+    int Pitch = BitmapWidth*BytesPerPixel;
     uint8 *Row = (uint8 *)BitmapMemory;
-    
     
     for(int Y = 0; Y < BitmapHeight; ++Y)
     {
         uint32 *Pixel = (uint32 *)Row;
+        
         for(int X = 0; X < BitmapWidth; ++X)
         {
             /*
 --                  0  1  2  3
  --Pixel in memory: BB GG RR xx
-
 
 --
 --Memory:        BB GG RR xx
@@ -62,9 +56,7 @@ RenderWeirdGradient(int XOffset, int YOffset)
             uint8 Green = (Y + YOffset);
             
             *Pixel++ = ((Green << 8) | Blue);
-            
         }
-        
         Row+=Pitch;
     }
 }
@@ -111,7 +103,7 @@ typedef struct tagBITMAPINFOHEADER {
     int BitmapMemorySize = (BitmapWidth*BitmapHeight)*BytesPerPixel;
     
     // Returns pages for the process inside memory.
-    BitmapMemory = VirtualAlloc(0, BitmapMemorySize, MEM_COMMIT, PAGE_READWRITE); 
+    BitmapMemory = VirtualAlloc(0, BitmapMemorySize, MEM_COMMIT, PAGE_READWRITE);
     
     // TODO(Seriuusly): Probably clear this to black
     
@@ -215,8 +207,8 @@ MainWindowCallback(HWND Window,
 
 
 // NOTE(Seriuusly): THE MAIN PROGRAM
-int CALLBACK WinMain(
-                     HINSTANCE Instance,
+
+int CALLBACK WinMain(HINSTANCE Instance,
                      HINSTANCE PrevInstance,
                      LPSTR CommandLine,
                      int ShowCode)
