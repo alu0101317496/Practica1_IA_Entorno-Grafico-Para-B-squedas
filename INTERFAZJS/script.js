@@ -3,8 +3,8 @@ var worldHeight = 10;
 var percentage = 30;
 
 // size of a tile in pixels
-var tileWidth = 32;
-var tileHeight = 32;
+var tileWidth = 8;
+var tileHeight = 8;
 
 // canvas element
 var canvas, ctx, spritesheet;
@@ -30,13 +30,13 @@ if (typeof console == "undefined") var console = {
 function SetWorld() {
 	worldWidth = document.getElementById('Width').value;
 	if (worldWidth == '') {
-		alert("NOT A VALID WIDTH INPUT! (Set 10 as default)"); 
+		alert("NOT A VALID WIDTH INPUT! (Set 10 as default)");
 		worldWidth = 10;
 	}
-	
+
 	worldHeight = document.getElementById('Height').value;
 	if (worldHeight == '') {
-		alert("NOT A VALID HEIGHT INPUT! (Set 10 as default"); 
+		alert("NOT A VALID HEIGHT INPUT! (Set 10 as default");
 		worldHeight = 10;
 	}
 
@@ -44,7 +44,7 @@ function SetWorld() {
 	if (percentage > 100) {percentage = 100;}
 	else if (percentage < 0) {percentage = 0;}
 	else if (percentage == '') {
-		alert("NOT A VALID PERCENTAGE INPUT! (Set 30 as default)"); 
+		alert("NOT A VALID PERCENTAGE INPUT! (Set 30 as default)");
 		percentage = 30;
 	}
 
@@ -60,7 +60,7 @@ function onload() {
 	canvas.oncontextmenu = rightClick;
 	ctx = canvas.getContext("2d");
 	spritesheet = new Image();
-	spritesheet.src = './img/tiles.png'
+	spritesheet.src = './img/Tiles40x8.png'
 	spritesheet.onload = loaded;
 }
 
@@ -119,8 +119,8 @@ function redraw() {
 	ctx.fillStyle = '#000000';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	// draw world with walls
-	for (var x = 0; x < worldWidth; x++) {
+	// draw world with walls10
+	for (var x = 0; x < worldWidth; x++) {10
 		for (var y = 0; y < worldHeight; y++) {
 			switch (world[x][y]) {
 				case 1:
@@ -136,7 +136,7 @@ function redraw() {
 		}
 	}
 
-	
+
 	// draw the path
 	for (rp = 0; rp < currentPath.length; rp++) {
 		switch (rp) {
