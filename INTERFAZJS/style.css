@@ -1,5 +1,23 @@
+:root {
+  --white: #ffffff;
+  --black: #212121;
+  --primary: #FFC107;
+  --seconday: #0097A7;
+  --gray: #757575;
+  --white_gray: #cbd4dd;
+
+  --principal-font: 3.8rem;
+}
+
+html {
+  font-size: 62.5%;
+}
+
 body {
   padding:0; margin:0; height:100%; width:100%;
+  background-color: var(--white_gray);
+
+
 }
 div {
   font-family:arial;
@@ -12,7 +30,7 @@ div {
   background-color: Green;
   border: none;
   color: white;
-  padding: 15px 30px;
+  padding: 10px 20px;
   border-radius: 1rem;
   text-align: center;
   text-decoration: none;

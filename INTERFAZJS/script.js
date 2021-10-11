@@ -1,12 +1,12 @@
-// size in the world in sprite tiles
 var worldWidth = 10;
 var worldHeight = 10;
+var percentage = 30;
 
 // size of a tile in pixels
 var tileWidth = 32;
 var tileHeight = 32;
 
-// the game's canvas element
+// canvas element
 var canvas, ctx, spritesheet;
 
 // true when the spritesheet has been downloaded
@@ -26,11 +26,28 @@ if (typeof console == "undefined") var console = {
 	log: function() {}
 };
 
+// set the values of width, height and percentage
 function SetWorld() {
 	worldWidth = document.getElementById('Width').value;
+	if (worldWidth == '') {
+		alert("NOT A VALID WIDTH INPUT! (Set 10 as default)"); 
+		worldWidth = 10;
+	}
+	
 	worldHeight = document.getElementById('Height').value;
-	console.log("WHIST");
-	console.log(worldWidth);
+	if (worldHeight == '') {
+		alert("NOT A VALID HEIGHT INPUT! (Set 10 as default"); 
+		worldHeight = 10;
+	}
+
+	percentage = document.getElementById('Percentage').value;
+	if (percentage > 100) {percentage = 100;}
+	else if (percentage < 0) {percentage = 0;}
+	else if (percentage == '') {
+		alert("NOT A VALID PERCENTAGE INPUT! (Set 30 as default)"); 
+		percentage = 30;
+	}
+
 	onload();
 }
 
@@ -49,14 +66,12 @@ function onload() {
 
 // the spritesheet is ready
 function loaded() {
-	console.log('Spritesheet loaded.');
 	spritesheetLoaded = true;
 	clearWorld();
 	createWorld();
 }
 
 function clearWorld() {
-	console.log('Clearing maze...');
 	for (var x = 0; x < worldWidth; x++) {
 		world[x] = [];
 		for (var y = 0; y < worldHeight; y++) {
@@ -73,8 +88,6 @@ function clearWorld() {
 
 // fill the world with walls
 function createWorld() {
-	console.log('Generating maze...');
-
 	// create emptiness
 	for (var x = 0; x < worldWidth; x++) {
 		world[x] = [];
@@ -83,15 +96,13 @@ function createWorld() {
 		}
 	}
 
-//////Por aqui
-	var percentage = 30;
 	var obstacles = (worldHeight * worldWidth) * (percentage / 100);
 	var i = 0;
 	var j = 0;
 	var k = 0;
 	while (i < obstacles) {
-		j = Math.floor(Math.random() * worldHeight);
-		k = Math.floor(Math.random() * worldWidth);
+		j = Math.floor(Math.random() * worldWidth);
+		k = Math.floor(Math.random() * worldHeight);
 		if(world[j][k] != 1) {
 			world[j][k] = 1;
 			i = i + 1;
@@ -101,16 +112,14 @@ function createWorld() {
 }
 
 function redraw() {
-	if (!spritesheetLoaded) return;
-
-	console.log('redrawing...');
-
+	if (!spritesheetLoaded) {return};
 	var spriteNum = 0;
 
 	// clear the screen
 	ctx.fillStyle = '#000000';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+	// draw world with walls
 	for (var x = 0; x < worldWidth; x++) {
 		for (var y = 0; y < worldHeight; y++) {
 			switch (world[x][y]) {
@@ -127,8 +136,8 @@ function redraw() {
 		}
 	}
 
+	
 	// draw the path
-	console.log('Current path length: ' + currentPath.length);
 	for (rp = 0; rp < currentPath.length; rp++) {
 		switch (rp) {
 			case 0:
