@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" >
+<script  src="./script.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <title>IA - Search INTERFACE</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+	<body onload='onload()'>
+		<div>
+			<p>
+        Enter World Width value:
+        <input type = "number" value = "10" id="Width"></input> <br>
+        Enter World Height value:
+        <input type = "number" value = "10" id="Height"></input> <br><br>
+        Enter percentage of obstacles:
+        <input type="number" value="30" id="Percentage"></input><br><br>
+        <button class = "Button" onclick="SetWorld()" id="WorldBuild">Apply</button><br><br>
+        <input type="button" onclick="clearWorld()" value="Clear"></input>
+        <input type="button" onclick="createWorld()" value="Regen"></input>
+			</p>
+		</div>
+		<div>
+			<canvas id="gameCanvas"></canvas>
+		</div>
+	</body>
+<!-- partial -->
+
+</html>
