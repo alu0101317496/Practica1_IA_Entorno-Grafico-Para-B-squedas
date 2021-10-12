@@ -2,9 +2,13 @@ var worldWidth = 10;
 var worldHeight = 10;
 var percentage = 30;
 
+
+
+var tamaño;
+
 // size of a tile in pixels
-var tileWidth = 8;
-var tileHeight = 8;
+var tileWidth;
+var tileHeight;
 
 // canvas element
 var canvas, ctx, spritesheet;
@@ -40,6 +44,19 @@ function SetWorld() {
 		worldHeight = 10;
 	}
 
+	tamaño = parseInt(worldWidth, 10) + parseInt(worldHeight, 10);////////////////////////////////
+
+	if (tamaño <= 50) {
+		tileWidth = 32;
+		tileHeight = 32;
+	} else if ((tamaño > 50) && (tamaño <= 400)) {
+		tileWidth = 8;
+		tileHeight = 8;
+	} else {
+		tileWidth = 2;
+		tileHeight = 2;
+	}
+
 	percentage = document.getElementById('Percentage').value;
 	if (percentage > 100) {percentage = 100;}
 	else if (percentage < 0) {percentage = 0;}
@@ -60,7 +77,18 @@ function onload() {
 	canvas.oncontextmenu = rightClick;
 	ctx = canvas.getContext("2d");
 	spritesheet = new Image();
-	spritesheet.src = './img/Tiles40x8.png'
+
+	if (tamaño <= 50) {
+		spritesheet.src = './img/Tiles160x32.png'
+	} else if ((tamaño > 50) && (tamaño <= 400)) {
+		spritesheet.src = './img/Tiles40x8.png'
+	} else {
+		spritesheet.src = './img/Tiles10x2.png'
+	}
+
+	
+	console.log(tamaño);
+	
 	spritesheet.onload = loaded;
 }
 
