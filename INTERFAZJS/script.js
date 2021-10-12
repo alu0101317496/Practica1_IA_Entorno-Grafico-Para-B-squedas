@@ -3,7 +3,6 @@ var worldHeight = 10;
 var percentage = 30;
 
 
-
 var tamaño;
 
 // size of a tile in pixels
@@ -58,14 +57,17 @@ function SetWorld() {
 	}
 
 	percentage = document.getElementById('Percentage').value;
-	if (percentage > 100) {percentage = 100;}
-	else if (percentage < 0) {percentage = 0;}
-	else if (percentage == '') {
-		alert("NOT A VALID PERCENTAGE INPUT! (Set 30 as default)");
-		percentage = 30;
-	}
+
+    ///////////////////////////////OPTIMIZATION DONE
+	if (percentage > 100) percentage = 100;
+	else if (percentage < 0 || percentage == '')
+    {
+		alert("NOT A VALID PERCENTAGE INPUT! (Setting 30 as default percentage)");
+        percentage=30;
+    }
 
 	onload();
+    ///////////////////////////////
 }
 
 // the html page is ready
