@@ -217,9 +217,6 @@ function rightClick(e) {
 		Math.floor(y / tileHeight)
 	];
 
-	// now we know while tile we clicked
-	console.log('we right clicked tile ' + cell[0] + ',' + cell[1]);
-
 	// toggle it into an obstacle
 	world[cell[0]][cell[1]] = (world[cell[0]][cell[1]] == 1) ? 0 : 1;
 
@@ -281,7 +278,7 @@ function canvasClick(e) {
     else {
     	pathEnd = cell;
     }
-
+	//Se han seteado bien los valores de inicio y de final
     // calculate path
     currentPath = findPath(world, pathStart, pathEnd);
   	}
@@ -305,14 +302,11 @@ function findPath(world, pathStart, pathEnd) {
 	// Note that this A-star implementation expects the world array to be square:
 	// it must have equal height and width. If your game world is rectangular,
 	// just fill the array with dummy values to pad the empty space.
-	var worldWidth = world[0].length;
-	var worldHeight = world.length;
 	var worldSize = worldWidth * worldHeight;
 
 	// which heuristic should we use?
 	// default: no diagonals (Manhattan)
 	var distanceFunction = ManhattanDistance;
-	var findNeighbours = function() {}; // empty
 
 	// distanceFunction functions
 	// these return how far away a point is to another
