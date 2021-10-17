@@ -1,7 +1,7 @@
 :root {
   --white: #ffffff;
   --black: #212121;
-  --primary: #FFC107;
+  --primary: rgb(255, 192, 57);
   --seconday: #0097A7;
   --gray: #757575;
   --white_gray: #cbd4dd;
@@ -11,27 +11,84 @@
 
 html {
   font-size: 62.5%;
+  box-sizing: border-box; /*Hack para box model*/
+}
+*, *::before, *:after {
+  box-sizing: inherit;
 }
 
 body {
   padding:0; margin:0; height:100%; width:100%;
   background-color: var(--white_gray);
+  background-image: url(./img/Website-Background-Image.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-bottom: 10rem;
 }
+
+/**    Títulos    **/
+.title {
+  text-align: right;
+  text-align: center;
+  font-size: 3.8rem;
+  color: var(--primary);
+  font-size: var(--principal-font); /*1rem = 10 px*/
+}
+
 div {
   font-family:arial;
   font-size:16px;
   font-weight:bold;
   text-align:center;
+  color: var(--white);
 }
 
-.Button {
+.Input {
+  color: var(--white);
+  background-color: rgba(255, 0, 0, 0);
+  font-size: 16px;
+}
+
+/* .ApplyButton {
   background-color: Green;
   border: none;
-  color: white;
+  color: var(--white);
   padding: 10px 20px;
   border-radius: 1rem;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+} */
+
+.ApplyButton, .ClearButton, .RegenButton {
+  background-color: var(--gray);
+  border: none;
+  color: var(--white);
+  padding: 10px 20px;
+  border-radius: 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--black);
+}
+
+
+/* .Inputs{
+  
+} */
+
+.Buttons{
+  /*activamos la propiedades de css grid, que nos permite 
+  definir ubicación y tamaño de nuestro sitio web*/
+  display: grid;
+  grid-template-columns: 100px 100px 100px;
+  justify-content: center;
+  /*grid-template-rows: 200px 800px;
+  grid: 200px 800px / 300px 300px;*/
+  /* grid-template-columns: repeat(3, 1fr); */
 }

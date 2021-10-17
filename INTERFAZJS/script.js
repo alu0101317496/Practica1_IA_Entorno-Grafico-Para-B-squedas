@@ -57,7 +57,6 @@ function SetWorld() {
 
 	percentage = document.getElementById('Percentage').value;
 
-    ///////////////////////////////OPTIMIZATION DONE
 	if (percentage > 100) percentage = 100;
 	else if (percentage < 0 || percentage == '')
     {
@@ -161,7 +160,6 @@ function redraw() {
 						  y * tileHeight, tileWidth, tileHeight);
 		}
 	}
-
 
 	// draw the path
 	for (rp = 0; rp < currentPath.length; rp++) {
