@@ -346,8 +346,8 @@ function canvasClick(e) {
 			pathStart = cell;
 			pathEnd = cell;
 
+			clearPath();
 			currentPath = findPath(world, pathStart, pathEnd);
-			redraw();
 		}
 
 		// now we know while tile we clicked
@@ -365,7 +365,7 @@ function canvasClick(e) {
 		// calculate path
 		currentPath = findPath(world, pathStart, pathEnd);
 	}
-	redraw();
+	redrawPath();
 }
 
 
