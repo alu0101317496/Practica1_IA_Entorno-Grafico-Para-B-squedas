@@ -42,7 +42,7 @@ function SetWorld() {
 		worldHeight = 10;
 	}
 
-	size = parseInt(worldWidth, 10) + parseInt(worldHeight, 10);////////////////////////////////
+	size = parseInt(worldWidth, 10) + parseInt(worldHeight, 10);
 
 	if (size <= 50) {
 		tileWidth = 32;
@@ -96,6 +96,8 @@ function loaded() {
 	createWorld();
 }
 
+/*Redraw tipo clear*/
+// clear the world and path
 function clearWorld() {
 	for (var x = 0; x < worldWidth; x++) {
 		world[x] = [];
@@ -108,9 +110,10 @@ function clearWorld() {
 	pathStart = [0, 0];
 	pathEnd = [0, 0];
 	currentPath = findPath(world, pathStart, pathEnd);
-	redraw();
+	redrawClear();
 }
 
+/*Redraw tipo walls*/
 // fill the world with walls
 function createWorld() {
 	// create emptiness
@@ -133,7 +136,7 @@ function createWorld() {
 			i = i + 1;
 		}
 	}
-	redraw();
+	redrawWalls();
 }
 
 function redraw() {
@@ -144,8 +147,8 @@ function redraw() {
 	ctx.fillStyle = '#000000';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	// draw world with walls10
-	for (var x = 0; x < worldWidth; x++) {10
+	// draw world with walls
+	for (var x = 0; x < worldWidth; x++) {
 		for (var y = 0; y < worldHeight; y++) {
 			switch (world[x][y]) {
 				case 1:
@@ -184,6 +187,84 @@ function redraw() {
 	}
 }
 
+function redrawWalls() {
+	if (!spritesheetLoaded) {return};
+	var spriteNum = 0;
+
+	// clear the screen
+	ctx.fillStyle = '#000000';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+	// draw world with walls10
+	for (var x = 0; x < worldWidth; x++) {
+		for (var y = 0; y < worldHeight; y++) {
+			switch (world[x][y]) {
+				case 1:
+					spriteNum = 1;
+					break;
+				default:
+					spriteNum = 0;
+					break;
+			}
+			ctx.drawImage(spritesheet, spriteNum * tileWidth, 0,
+						  tileWidth, tileHeight, x * tileWidth,
+						  y * tileHeight, tileWidth, tileHeight);
+		}
+	}
+}
+
+function redrawPath() {
+	if (!spritesheetLoaded) {return};
+	var spriteNum = 0;
+
+	// draw the path
+	for (rp = 0; rp < currentPath.length; rp++) {
+		switch (rp) {
+			case 0:
+				spriteNum = 2; // start
+				break;
+			case currentPath.length - 1:
+				spriteNum = 3; // end
+				break;
+			default:
+				spriteNum = 4; // path node
+				break;
+		}
+
+		ctx.drawImage(spritesheet,
+			spriteNum * tileWidth, 0,
+			tileWidth, tileHeight,
+			currentPath[rp][0] * tileWidth,
+			currentPath[rp][1] * tileHeight,
+			tileWidth, tileHeight);
+	}	
+}
+
+function clearPath() {
+	if (!spritesheetLoaded) {return};
+	var spriteNum = 0;
+
+	// draw the path
+	for (rp = 0; rp < currentPath.length; rp++) {
+		spriteNum = 0;
+		ctx.drawImage(spritesheet,
+			spriteNum * tileWidth, 0,
+			tileWidth, tileHeight,
+			currentPath[rp][0] * tileWidth,
+			currentPath[rp][1] * tileHeight,
+			tileWidth, tileHeight);
+	}	
+}
+
+function redrawClear() {
+	if (!spritesheetLoaded) {return};
+	var spriteNum = 0;
+
+	// clear the screen
+	ctx.fillStyle = '#000000';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
 // handle right click events on the canvas
 function rightClick(e) {
 	var x;
@@ -215,8 +296,15 @@ function rightClick(e) {
 	world[cell[0]][cell[1]] = (world[cell[0]][cell[1]] == 1) ? 0 : 1;
 
 	// calculate path
+	clearPath();
+	ctx.drawImage(spritesheet,
+		world[cell[0]][cell[1]] * tileWidth, 0,
+		tileWidth, tileHeight,
+		cell[0] * tileWidth,
+		cell[1] * tileHeight,
+		tileWidth, tileHeight);
 	currentPath = findPath(world, pathStart, pathEnd);
-	redraw();
+	redrawPath();/*Dibuja el camino con cada click, pero no se actualiza con*/
 
 	// Prevent context menu
 	return false;
@@ -251,31 +339,32 @@ function canvasClick(e) {
 		Math.floor(y / tileHeight)
 	];
 
-  // Prevent placing inside obstacle
-  if (world[cell[0]][cell[1]] == 0) {
-    if (!path) {
-    	// remove old path
-    	pathStart = cell;
-    	pathEnd = cell;
-    	currentPath = findPath(world, pathStart, pathEnd);
-    	redraw();
-    }
+	// Prevent placing inside obstacle
+	if (world[cell[0]][cell[1]] == 0) {
+		if (!path) {
+			// remove old path
+			pathStart = cell;
+			pathEnd = cell;
 
-	// now we know while tile we clicked
-	console.log('we clicked tile ' + cell[0] + ',' + cell[1]);
+			currentPath = findPath(world, pathStart, pathEnd);
+			redraw();
+		}
 
-	path = !path;
+		// now we know while tile we clicked
+		console.log('we clicked tile ' + cell[0] + ',' + cell[1]);
 
-	if (path) {
-    	pathStart = cell;
-    }
-    else {
-    	pathEnd = cell;
-    }
-	//Se han seteado bien los valores de inicio y de final
-    // calculate path
-    currentPath = findPath(world, pathStart, pathEnd);
-  	}
+		path = !path;
+
+		if (path) {
+			pathStart = cell;
+		}
+		else {
+			pathEnd = cell;
+		}
+		//Se han seteado bien los valores de inicio y de final
+		// calculate path
+		currentPath = findPath(world, pathStart, pathEnd);
+	}
 	redraw();
 }
 
