@@ -2,8 +2,7 @@ var worldWidth = 10;
 var worldHeight = 10;
 var percentage = 30;
 
-
-var tamaño;
+var size;
 
 // size of a tile in pixels
 var tileWidth;
@@ -43,12 +42,12 @@ function SetWorld() {
 		worldHeight = 10;
 	}
 
-	tamaño = parseInt(worldWidth, 10) + parseInt(worldHeight, 10);////////////////////////////////
+	size = parseInt(worldWidth, 10) + parseInt(worldHeight, 10);////////////////////////////////
 
-	if (tamaño <= 50) {
+	if (size <= 50) {
 		tileWidth = 32;
 		tileHeight = 32;
-	} else if ((tamaño > 50) && (tamaño <= 400)) {
+	} else if ((size > 50) && (size <= 400)) {
 		tileWidth = 8;
 		tileHeight = 8;
 	} else {
@@ -67,7 +66,6 @@ function SetWorld() {
     }
 
 	onload();
-    ///////////////////////////////
 }
 
 // the html page is ready
@@ -80,17 +78,15 @@ function onload() {
 	ctx = canvas.getContext("2d");
 	spritesheet = new Image();
 
-	if (tamaño <= 50) {
+	if (size <= 50) {
 		spritesheet.src = './img/Tiles160x32.png'
-	} else if ((tamaño > 50) && (tamaño <= 400)) {
+	} else if ((size > 50) && (size <= 400)) {
 		spritesheet.src = './img/Tiles40x8.png'
 	} else {
 		spritesheet.src = './img/Tiles10x2.png'
 	}
 
-	
-	console.log(tamaño);
-	
+	console.log(size);	
 	spritesheet.onload = loaded;
 }
 
@@ -299,9 +295,6 @@ function findPath(world, pathStart, pathEnd) {
 	var maxWalkableTileNum = 0;
 
 	// keep track of the world dimensions
-	// Note that this A-star implementation expects the world array to be square:
-	// it must have equal height and width. If your game world is rectangular,
-	// just fill the array with dummy values to pad the empty space.
 	var worldSize = worldWidth * worldHeight;
 
 	// which heuristic should we use?
@@ -310,14 +303,12 @@ function findPath(world, pathStart, pathEnd) {
 
 	// distanceFunction functions
 	// these return how far away a point is to another
-
 	function ManhattanDistance(Point, Goal) {
 		return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
 	}
 
 	// Returns every available North, South, East or West
 	// cell that is empty. No diagonals,
-	// unless distanceFunction function is not Manhattan
 	function Neighbours(x, y) {
 		var N = y - 1,
 			S = y + 1,
