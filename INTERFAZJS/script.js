@@ -385,13 +385,16 @@ function findPath(world, pathStart, pathEnd) {
 	var worldSize = worldWidth * worldHeight;
 
 	// which heuristic should we use?
-	// default: no diagonals (Manhattan)
-	var distanceFunction = ManhattanDistance;
+	// default: Euclidean
+	var distanceFunction = EuclideanDistance;
 
 	// distanceFunction functions
 	// these return how far away a point is to another
 	function ManhattanDistance(Point, Goal) {
 		return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
+	}
+	function EuclideanDistance(Point, Goal) {
+		return Math.sqrt((abs(Point.x - Goal.x))*(abs(Point.y - Goal.y)));
 	}
 
 	// Returns every available North, South, East or West
