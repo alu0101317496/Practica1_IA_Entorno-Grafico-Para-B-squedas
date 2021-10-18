@@ -79,7 +79,14 @@ div {
 
 .ApplyButton:hover, .ClearButton:hover, .RegenButton:hover 
 {
-  background-color: rgba(200, 200, 200, 255);
+  background-color: rgba(200, 200, 200);
+}
+
+.ApplyButton:active, .ClearButton:active, .RegenButton:active
+{
+  background-color: rgba(150, 150, 150);
+  box-shadow: 0, 5px, #222;
+  transform: translateY(4px);
 }
 
 /* .Inputs{
