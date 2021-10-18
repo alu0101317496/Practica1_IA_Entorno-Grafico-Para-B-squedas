@@ -77,6 +77,10 @@ div {
   border-color: var(--black);
 }
 
+.ApplyButton:hover, .ClearButton:hover, .RegenButton:hover 
+{
+  background-color: rgba(200, 200, 200, 255);
+}
 
 /* .Inputs{
   
