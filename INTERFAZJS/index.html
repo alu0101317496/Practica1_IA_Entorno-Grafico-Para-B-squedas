@@ -13,23 +13,16 @@
     <div>
       <p>
         <div class="Inputs">
-          Select the algorithm to use:
-          <SELECT class="Input" class="Algorithm_Selector">
-            <OPTION Value="Under 16">A*</OPTION>
-            <OPTION Value="16 to 25">Dijkstra</OPTION>
-            <OPTION Value="26 to 40">Greedy</OPTION>            
-          </SELECT><br><br>
           World Width value:
-          <input class = "Input" type = "number" value = "10" id="Width"></input> <br>
+          <input min="0" class = "Input" type = "number" value = "10" id="Width"></input> <br>
           World Height value:
-          <input class = "Input" type = "number" value = "10" id="Height"></input> <br><br>
+          <input min="0" class = "Input" type = "number" value = "10" id="Height"></input> <br><br>
           Percentage of obstacles:
-          <input class = "Input" type="number" value="30" id="Percentage"></input><br><br>
+          <input min="0" max="100" class = "Input" type="number" value="30" id="Percentage"></input><br><br>
         </div>
         <div class="Buttons">
           <button class = "ApplyButton" onclick="SetWorld()" id="WorldBuild">Apply</button>
           <button class = "ClearButton" onclick="clearWorld()">Clear</input>
-          <button class = "RegenButton" onclick="createWorld()">Regen</input>
         </div>
       </p>
     </div>
