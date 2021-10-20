@@ -19,7 +19,7 @@ var spritesheetLoaded = false;
 // the world grid (2d array of tiles)
 var world = [[]];
 
-// --------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------------------------------------
 var path = 0;
 
 // start and end of path
@@ -87,8 +87,6 @@ function onload() {
 	} else {
 		spritesheet.src = './img/Tiles10x2.png'
 	}
-
-	console.log(size);	
 	spritesheet.onload = loaded;
 }
 
@@ -367,12 +365,6 @@ function findPath(world, pathStart, pathEnd) {
 	// shortcuts for speed
 	var abs = Math.abs;
 
-	// the world data are integers:
-	// anything higher than this number is considered blocked
-	// this is handy is you use numbered sprites, more than one
-	// of which is walkable road, grass, mud, etc
-	var maxWalkableTileNum = 0;
-
 	// keep track of the world dimensions
 	var worldSize = worldWidth * worldHeight;
 
@@ -395,7 +387,7 @@ function findPath(world, pathStart, pathEnd) {
 	// cell that is empty. No diagonals,
 	function Neighbours(x, y) {
 		// declare de directions (N, S, E, W) and match them only if 
-		// the conditions are met respectively
+		// the booleans respectively are true
 		var N = y - 1,
 			S = y + 1,
 			E = x + 1,
@@ -434,9 +426,9 @@ function findPath(world, pathStart, pathEnd) {
 
 	// returns boolean value (world cell is available and open)
 	function canWalkHere(x, y) {
-		return ((world[x] != null) &&
+		return ((world[x]    != null) &&
 				(world[x][y] != null) &&
-				(world[x][y] <= maxWalkableTileNum));
+				(world[x][y] == 0));
 	};
 
 	// Node function, returns a new object with Node properties
@@ -450,20 +442,17 @@ function findPath(world, pathStart, pathEnd) {
 			// the location coordinates of this Node
 			x: Point.x,
 			y: Point.y,
-			// the heuristic estimated cost
-			// of an entire path using this node
+			// the heuristic estimated cost of an entire path using this node
 			f: 0,
-			// the distanceFunction cost to get
-			// from the starting point to this node
+			// the distanceFunction cost to get from the starting point to this node
 			g: 0
 		};
-
 		return newNode;
 	}
 
 	// Path function, executes AStar algorithm operations
 	function calculatePath() {
-		// create Nodes from the Start and End x,y coordinates
+		// create Nodes from the Start and End x, y coordinates
 		var mypathStart = Node(null, {
 			x: pathStart[0],
 			y: pathStart[1]
@@ -481,7 +470,8 @@ function findPath(world, pathStart, pathEnd) {
 		var myPath;								// reference to a Node (that starts a path in question)
 		var length, max, min, i, j;				// temp integer variables used in the calculations
 
-		while (length = Open.length){			// iterate through the open list until none are left
+		// iterate through the open list until none are left
+		while (length = Open.length) {			
 			max = worldSize;
 			min = -1;
 			for (i = 0; i < length; i++) {
@@ -529,4 +519,3 @@ function findPath(world, pathStart, pathEnd) {
 	}
 	return calculatePath();
 }
-/*------------------------------------------------------------------------------------------------------------------------------------ */
