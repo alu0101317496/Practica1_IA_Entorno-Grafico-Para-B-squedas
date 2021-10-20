@@ -77,13 +77,11 @@ div {
   border-color: var(--black);
 }
 
-.ApplyButton:hover, .ClearButton:hover, .RegenButton:hover 
-{
+.ApplyButton:hover, .ClearButton:hover {
   background-color: rgba(200, 200, 200);
 }
 
-.ApplyButton:active, .ClearButton:active, .RegenButton:active
-{
+.ApplyButton:active, .ClearButton:active, .RegenButton:active {
   background-color: rgba(150, 150, 150);
   box-shadow: 0, 5px, #222;
   transform: translateY(4px);
@@ -93,11 +91,11 @@ div {
   
 } */
 
-.Buttons{
+.Buttons {
   /*activamos la propiedades de css grid, que nos permite 
   definir ubicación y tamaño de nuestro sitio web*/
   display: grid;
-  grid-template-columns: 100px 100px 100px;
+  grid-template-columns: 100px 100px;
   justify-content: center;
   /*grid-template-rows: 200px 800px;
   grid: 200px 800px / 300px 300px;*/

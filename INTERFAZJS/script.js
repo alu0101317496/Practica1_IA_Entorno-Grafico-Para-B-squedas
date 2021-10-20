@@ -1,7 +1,9 @@
+// values of the world
 var worldWidth = 10;
 var worldHeight = 10;
 var percentage = 30;
 
+// total size of the world (height + width)
 var size;
 
 // size of a tile in pixels
@@ -17,6 +19,9 @@ var spritesheetLoaded = false;
 // the world grid (2d array of tiles)
 var world = [[]];
 
+// --------------------------------------------------------------------------------------------------------------------------------
+var path = 0;
+
 // start and end of path
 var pathStart = [worldWidth, worldHeight];
 var pathEnd = [0, 0];
@@ -31,18 +36,18 @@ if (typeof console == "undefined") var console = {
 // set the values of width, height and percentage
 function SetWorld() {
 	worldWidth = document.getElementById('Width').value;
-	if (worldWidth == '') {
+	if (worldWidth == '' || worldWidth <= 0) {
 		alert("NOT A VALID WIDTH INPUT! (Set 10 as default)");
 		worldWidth = 10;
 	}
 
 	worldHeight = document.getElementById('Height').value;
-	if (worldHeight == '') {
+	if (worldHeight == '' || worldWidth <= 0) {
 		alert("NOT A VALID HEIGHT INPUT! (Set 10 as default");
 		worldHeight = 10;
 	}
 
-	size = parseInt(worldWidth, 10) + parseInt(worldHeight, 10);
+	size = parseInt(worldWidth,10) + parseInt(worldHeight, 10);
 
 	if (size <= 50) {
 		tileWidth = 32;
@@ -57,11 +62,9 @@ function SetWorld() {
 
 	percentage = document.getElementById('Percentage').value;
 
-	if (percentage > 100) percentage = 100;
-	else if (percentage < 0 || percentage == '')
-    {
+	if (percentage > 100 || percentage < 0 || percentage == '') {
 		alert("NOT A VALID PERCENTAGE INPUT! (Setting 30 as default percentage)");
-        percentage=30;
+        percentage = 30;
     }
 
 	onload();
@@ -96,9 +99,9 @@ function loaded() {
 	createWorld();
 }
 
-/*Redraw tipo clear*/
 // clear the world and path
 function clearWorld() {
+	// create emptiness
 	for (var x = 0; x < worldWidth; x++) {
 		world[x] = [];
 		for (var y = 0; y < worldHeight; y++) {
@@ -110,10 +113,9 @@ function clearWorld() {
 	pathStart = [0, 0];
 	pathEnd = [0, 0];
 	currentPath = findPath(world, pathStart, pathEnd);
-	redrawClear();
+	cleanCanvas();
 }
 
-/*Redraw tipo walls*/
 // fill the world with walls
 function createWorld() {
 	// create emptiness
@@ -124,6 +126,7 @@ function createWorld() {
 		}
 	}
 
+	// calculate the number of obtacles and set the obstacles randomly
 	var obstacles = (worldHeight * worldWidth) * (percentage / 100);
 	var i = 0;
 	var j = 0;
@@ -139,6 +142,7 @@ function createWorld() {
 	redrawWalls();
 }
 
+// Original redraw (not recomended to use, not optimal)
 function redraw() {
 	if (!spritesheetLoaded) {return};
 	var spriteNum = 0;
@@ -187,32 +191,22 @@ function redraw() {
 	}
 }
 
+// redraw only the walls
 function redrawWalls() {
 	if (!spritesheetLoaded) {return};
-	var spriteNum = 0;
 
-	// clear the screen
-	ctx.fillStyle = '#000000';
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-	// draw world with walls10
 	for (var x = 0; x < worldWidth; x++) {
 		for (var y = 0; y < worldHeight; y++) {
-			switch (world[x][y]) {
-				case 1:
-					spriteNum = 1;
-					break;
-				default:
-					spriteNum = 0;
-					break;
+			if (world[x][y] == 1) {
+				ctx.drawImage(spritesheet, 1 * tileWidth, 0,
+							  tileWidth, tileHeight, x * tileWidth,
+							  y * tileHeight, tileWidth, tileHeight);
 			}
-			ctx.drawImage(spritesheet, spriteNum * tileWidth, 0,
-						  tileWidth, tileHeight, x * tileWidth,
-						  y * tileHeight, tileWidth, tileHeight);
 		}
 	}
 }
 
+// redraw only the path
 function redrawPath() {
 	if (!spritesheetLoaded) {return};
 	var spriteNum = 0;
@@ -240,11 +234,12 @@ function redrawPath() {
 	}	
 }
 
+// clear the old path
 function clearPath() {
 	if (!spritesheetLoaded) {return};
 	var spriteNum = 0;
 
-	// draw the path
+	// clear path
 	for (rp = 0; rp < currentPath.length; rp++) {
 		spriteNum = 0;
 		ctx.drawImage(spritesheet,
@@ -256,10 +251,9 @@ function clearPath() {
 	}	
 }
 
-function redrawClear() {
+// clear the world
+function cleanCanvas() {
 	if (!spritesheetLoaded) {return};
-	var spriteNum = 0;
-
 	// clear the screen
 	ctx.fillStyle = '#000000';
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -267,6 +261,7 @@ function redrawClear() {
 
 // handle right click events on the canvas
 function rightClick(e) {
+	// variables to save the page coords
 	var x;
 	var y;
 
@@ -294,23 +289,21 @@ function rightClick(e) {
 
 	// toggle it into an obstacle
 	world[cell[0]][cell[1]] = (world[cell[0]][cell[1]] == 1) ? 0 : 1;
-
-	// calculate path
-	clearPath();
 	ctx.drawImage(spritesheet,
 		world[cell[0]][cell[1]] * tileWidth, 0,
 		tileWidth, tileHeight,
 		cell[0] * tileWidth,
 		cell[1] * tileHeight,
 		tileWidth, tileHeight);
+
+	// recalculate path
+	clearPath();
 	currentPath = findPath(world, pathStart, pathEnd);
-	redrawPath();/*Dibuja el camino con cada click, pero no se actualiza con*/
+	redrawPath();
 
 	// Prevent context menu
 	return false;
 }
-
-var path = 0;
 
 // handle click events on the canvas
 function canvasClick(e) {
@@ -368,8 +361,7 @@ function canvasClick(e) {
 	redrawPath();
 }
 
-
-// world is a 2d array of integers (eg world[10][15] = 0)
+// world is a 2d array of integers
 // pathStart and pathEnd are arrays like [5,10]
 function findPath(world, pathStart, pathEnd) {
 	// shortcuts for speed
@@ -385,21 +377,25 @@ function findPath(world, pathStart, pathEnd) {
 	var worldSize = worldWidth * worldHeight;
 
 	// which heuristic should we use?
-	// default: Euclidean
-	var distanceFunction = EuclideanDistance;
+	// default: Manhattan (recommended)
+	var distanceFunction = ManhattanDistance;
 
 	// distanceFunction functions
-	// these return how far away a point is to another
+	// these return how far away a point is to another (source to destination)
 	function ManhattanDistance(Point, Goal) {
 		return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
 	}
+	
 	function EuclideanDistance(Point, Goal) {
-		return Math.sqrt((abs(Point.x - Goal.x))*(abs(Point.y - Goal.y)));
+		return Math.sqrt((abs(Goal.x - Point.x)) * (abs(Goal.x - Point.x)) + 
+						 (abs(Goal.y - Point.y)) * (abs(Goal.y - Point.y)));
 	}
 
 	// Returns every available North, South, East or West
 	// cell that is empty. No diagonals,
 	function Neighbours(x, y) {
+		// declare de directions (N, S, E, W) and match them only if 
+		// the conditions are met respectively
 		var N = y - 1,
 			S = y + 1,
 			E = x + 1,
@@ -533,3 +529,4 @@ function findPath(world, pathStart, pathEnd) {
 	}
 	return calculatePath();
 }
+/*------------------------------------------------------------------------------------------------------------------------------------ */
