@@ -20,13 +20,15 @@ var spritesheetLoaded = false;
 var world = [[]];
 
 // ----------------------------------------------------------------------------------------------------------------------------
+// auxiliar value that switches between 0 and 1 if the user click the first 
+// time (initial node) or the second (end node)
 var path = 0;
 
 // start and end of path
 var pathStart = [worldWidth, worldHeight];
 var pathEnd = [0, 0];
 var currentPath = [];
-
+var pathFound = false;
 
 // ensure that concole.log doesn't cause errors
 if (typeof console == "undefined") var console = {
@@ -140,55 +142,6 @@ function createWorld() {
 	redrawWalls();
 }
 
-// Original redraw (not recomended to use, not optimal)
-function redraw() {
-	if (!spritesheetLoaded) {return};
-	var spriteNum = 0;
-
-	// clear the screen
-	ctx.fillStyle = '#000000';
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-	// draw world with walls
-	for (var x = 0; x < worldWidth; x++) {
-		for (var y = 0; y < worldHeight; y++) {
-			switch (world[x][y]) {
-				case 1:
-					spriteNum = 1;
-					break;
-				default:
-					spriteNum = 0;
-					break;
-			}
-			ctx.drawImage(spritesheet, spriteNum * tileWidth, 0,
-						  tileWidth, tileHeight, x * tileWidth,
-						  y * tileHeight, tileWidth, tileHeight);
-		}
-	}
-
-	// draw the path
-	for (rp = 0; rp < currentPath.length; rp++) {
-		switch (rp) {
-			case 0:
-				spriteNum = 2; // start
-				break;
-			case currentPath.length - 1:
-				spriteNum = 3; // end
-				break;
-			default:
-				spriteNum = 4; // path node
-				break;
-		}
-
-		ctx.drawImage(spritesheet,
-			spriteNum * tileWidth, 0,
-			tileWidth, tileHeight,
-			currentPath[rp][0] * tileWidth,
-			currentPath[rp][1] * tileHeight,
-			tileWidth, tileHeight);
-	}
-}
-
 // redraw only the walls
 function redrawWalls() {
 	if (!spritesheetLoaded) {return};
@@ -239,8 +192,15 @@ function clearPath() {
 
 	// clear path
 	for (rp = 0; rp < currentPath.length; rp++) {
-		spriteNum = 0;
-		ctx.drawImage(spritesheet,
+		switch(world[currentPath[rp][0]][currentPath[rp][1]]) {
+			case 0:
+				spriteNum = 0;
+				break;
+			case 1:
+				spriteNum = 1;
+				break;
+		}
+			ctx.drawImage(spritesheet,
 			spriteNum * tileWidth, 0,
 			tileWidth, tileHeight,
 			currentPath[rp][0] * tileWidth,
@@ -297,7 +257,13 @@ function rightClick(e) {
 	// recalculate path
 	clearPath();
 	currentPath = findPath(world, pathStart, pathEnd);
-	redrawPath();
+	if(pathFound) {
+		pathFound = false;
+		redrawPath();
+	}
+	else {
+		alert("Path not found");
+	}
 
 	// Prevent context menu
 	return false;
@@ -324,7 +290,7 @@ function canvasClick(e) {
 	x -= canvas.offsetLeft;
 	y -= canvas.offsetTop;
 
-	// return tile x,y that we clicked
+	// return tile x, y that we clicked
 	var cell = [
 		Math.floor(x / tileWidth),
 		Math.floor(y / tileHeight)
@@ -341,9 +307,6 @@ function canvasClick(e) {
 			currentPath = findPath(world, pathStart, pathEnd);
 		}
 
-		// now we know while tile we clicked
-		console.log('we clicked tile ' + cell[0] + ',' + cell[1]);
-
 		path = !path;
 
 		if (path) {
@@ -356,7 +319,18 @@ function canvasClick(e) {
 		// calculate path
 		currentPath = findPath(world, pathStart, pathEnd);
 	}
-	redrawPath();
+	else {
+		clearPath();
+		alert("This is an obtacle");
+	}
+	if (pathFound) {
+		pathFound = false;
+		redrawPath();
+	}
+	else {
+		clearPath();
+		alert("No path found")
+	}
 }
 
 // world is a 2d array of integers
@@ -437,15 +411,17 @@ function findPath(world, pathStart, pathEnd) {
 		var newNode = {
 			// pointer to another Node object
 			Parent: Parent,
-			// array index of this Node in the world linear array
+			// array index of this Node in the world (linear array)
 			value: Point.x + (Point.y * worldWidth),
 			// the location coordinates of this Node
 			x: Point.x,
 			y: Point.y,
 			// the heuristic estimated cost of an entire path using this node
 			f: 0,
-			// the distanceFunction cost to get from the starting point to this node
-			g: 0
+			// the cost to get from the starting point to this node
+			g: 0,
+			// the distanceFunction cost to get from this node to the destination node
+			h: 0
 		};
 		return newNode;
 	}
@@ -480,9 +456,12 @@ function findPath(world, pathStart, pathEnd) {
 					min = i;
 				}
 			}
-			// grab the next node and remove it from Open array
+			// grab the next node and remove it from Open list array
 			myNode = Open.splice(min, 1)[0];
-			// is it the destination node?
+			// check if it is the destination node?
+			// The strict equality operator (===) checks whether its two operands are equal, 
+			// returning a Boolean result. Unlike the equality operator, the strict equality 
+			// operator always considers operands of different types to be different.
 			if (myNode.value === mypathEnd.value) {
 				myPath = Closed[Closed.push(myNode) - 1];
 				do {
@@ -493,6 +472,7 @@ function findPath(world, pathStart, pathEnd) {
 				AStar = Closed = Open = [];
 				// we want to return start to finish
 				result.reverse();
+				pathFound = true;
 			}
 			else { // not the destination
 				// find which nearby nodes are walkable
