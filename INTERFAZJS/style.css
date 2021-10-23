@@ -61,7 +61,7 @@ div {
   font-size: 16px;
 } */
 
-.ApplyButton, .ClearButton, .RegenButton {
+.ApplyButton, .ClearButton, .RegenButton, .file{
   background-color: var(--gray);
   border: none;
   color: var(--white);
@@ -88,11 +88,11 @@ div {
 }
 
 /* .Inputs{
-  
+
 } */
 
 .Buttons {
-  /*activamos la propiedades de css grid, que nos permite 
+  /*activamos la propiedades de css grid, que nos permite
   definir ubicación y tamaño de nuestro sitio web*/
   display: grid;
   grid-template-columns: 100px 100px;
