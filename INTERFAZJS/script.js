@@ -381,21 +381,17 @@ function findPath(world, pathStart, pathEnd)
 			S = y + 1,
 			E = x + 1,
 			W = x - 1,
-			myN = N > -1 && canWalkHere(x, N),
-			myS = S < worldHeight && canWalkHere(x, S),
-			myE = E < worldWidth && canWalkHere(E, y),
-			myW = W > -1 && canWalkHere(W, y),
 			result = [];
-		if (myN)
+		if (canWalkHere(x, N))
 			result.push({x: x,
                          y: N});
-		if (myE)
+		if (canWalkHere(E, y))
 			result.push({x: E,
                          y: y});
-		if (myS)
+		if (canWalkHere(x, S))
 			result.push({x: x,
 				         y: S});
-		if (myW)
+		if (canWalkHere(W, y))
 			result.push({x: W,
                          y: y});
 
@@ -407,6 +403,8 @@ function findPath(world, pathStart, pathEnd)
     {
 		return ((world[x]    != null) &&
 				(world[x][y] != null) &&
+				(x > -1 && x < worldHeight) && 
+				(y > -1 && y < worldWidth ) &&  
 				(world[x][y] == 0));
 	};
 
@@ -447,14 +445,15 @@ function findPath(world, pathStart, pathEnd)
 		var myNeighbours;						// reference to a Node (that is nearby)
 		var myNode;								// reference to a Node (that we are considering now)
 		var myPath;								// reference to a Node (that starts a path in question)
-		var length, max, min, i, j;				// temp integer variables used in the calculations
+		var max, min, i, j;				// temp integer variables used in the calculations
 
 		// iterate through the open list until none are left
-		while (length = Open.length) 
+		while (Open.length > 0) 
         {
 			max = worldSize;
 			min = -1;
-			for (i = 0; i < length; i++) 
+			// search the cell with the lowest f value in the open list
+			for (i = 0; i < Open.length; i++) 
             {
 				if (Open[i].f < max) 
                 {
@@ -470,6 +469,7 @@ function findPath(world, pathStart, pathEnd)
 			// operator always considers operands of different types to be different.
 			if (myNode.value === mypathEnd.value) 
             {
+				// NOTE: push returns the new lenght of the array/vector
 				myPath = Closed[Closed.push(myNode) - 1];
 				do 
                 {
@@ -489,11 +489,14 @@ function findPath(world, pathStart, pathEnd)
 				// test each one that hasn't been tried already
 				for (i = 0, j = myNeighbours.length; i < j; i++) {
 					myPath = Node(myNode, myNeighbours[i]);
+					// NOTE: path.value -> position in the array for the coords x, y
 					if (!AStar[myPath.value]) {
 						// estimated cost of this particular route so far
-						myPath.g = myNode.g + distanceFunction(myNeighbours[i], myNode);
+						myPath.g = myNode.g + 1;
+						// estimated cost of the guessed route to the destination from the actual cell
+						myPath.h = distanceFunction(myNeighbours[i], mypathEnd);
 						// estimated cost of entire guessed route to the destination
-						myPath.f = myPath.g + distanceFunction(myNeighbours[i], mypathEnd);
+						myPath.f = myPath.g + myPath.h;
 						// remember this new path for testing above
 						Open.push(myPath);
 						// mark this node in the world graph as visited
@@ -520,76 +523,76 @@ function findPath(world, pathStart, pathEnd)
 //#################################################################
 
 
-var obstaclesX = []; //File vector for X positions
-var obstaclesY = []; //File vector for Y positions
-var selector = 0; //Aux to choose X or Y file positions
+// var obstaclesX = []; //File vector for X positions
+// var obstaclesY = []; //File vector for Y positions
+// var selector = 0; //Aux to choose X or Y file positions
 
-function pushObstacleX(string) {
-	obstaclesX.push(string)
-}
+// function pushObstacleX(string) {
+// 	obstaclesX.push(string)
+// }
 
-function pushObstacleY(string) {
-	obstaclesY.push(string)
-}
+// function pushObstacleY(string) {
+// 	obstaclesY.push(string)
+// }
 
 
-function process(event) {
-  var files = event.target.files
-  var reader = new FileReader()
+// function process(event) {
+//   var files = event.target.files
+//   var reader = new FileReader()
 
-  reader.onload = function() {
-    var contents = this.result
+//   reader.onload = function() {
+//     var contents = this.result
 
-    for (let j = 0; j < contents.length; j++) {
-      //Initialize variable
-      var string = '';
+//     for (let j = 0; j < contents.length; j++) {
+//       //Initialize variable
+//       var string = '';
 
-      //Initialize string
-      if (contents.substr(j, 1) >= '0' && contents.substr(j, 1) <='9' ) {
-        do {
-          string += contents.substr(j, 1); //Grow string if posible
-          j++;
-        }
-        while (contents.substr(j, 1) >= '0' && contents.substr(j, 1) <='9') //Check if the string is followed by numbers
+//       //Initialize string
+//       if (contents.substr(j, 1) >= '0' && contents.substr(j, 1) <='9' ) {
+//         do {
+//           string += contents.substr(j, 1); //Grow string if posible
+//           j++;
+//         }
+//         while (contents.substr(j, 1) >= '0' && contents.substr(j, 1) <='9') //Check if the string is followed by numbers
 
-				//Choose to what vector push the string: X(pair) Y(odd)
-        if (selector % 2 == 0) {
-          pushObstacleX(string)
-        } else {
-          pushObstacleY(string)
-        }
+// 				//Choose to what vector push the string: X(pair) Y(odd)
+//         if (selector % 2 == 0) {
+//           pushObstacleX(string)
+//         } else {
+//           pushObstacleY(string)
+//         }
 
-				//Upgrade selector
-        selector++;
-      }
-    }
+// 				//Upgrade selector
+//         selector++;
+//       }
+//     }
 
-		//If there are uneven numbers (One X without Y), unuse the last X
-    if (obstaclesX.length > obstaclesY.length) {
-      obstaclesX.pop();
-    }
+// 		//If there are uneven numbers (One X without Y), unuse the last X
+//     if (obstaclesX.length > obstaclesY.length) {
+//       obstaclesX.pop();
+//     }
 
-    console.log(obstaclesX, obstaclesX.length);
-    console.log(obstaclesY, obstaclesY.length);
+//     console.log(obstaclesX, obstaclesX.length);
+//     console.log(obstaclesY, obstaclesY.length);
 
-		//Signal what positions to change as wall and call redraw function
-		for (itr = 0; itr < obstaclesX.length; itr++) {
-			x = obstaclesX[itr];
-			y = obstaclesY[itr];
-			console.log("Posicion x:", x, "y:",y);
+// 		//Signal what positions to change as wall and call redraw function
+// 		for (itr = 0; itr < obstaclesX.length; itr++) {
+// 			x = obstaclesX[itr];
+// 			y = obstaclesY[itr];
+// 			console.log("Posicion x:", x, "y:",y);
 
-			world[x] = [];
-		  world[x][y] = 1;
-			redrawWalls();
+// 			world[x] = [];
+// 		  world[x][y] = 1;
+// 			redrawWalls();
 
-		}
-		obstaclesX = [];
-		obstaclesY = [];
-  }
+// 		}
+// 		obstaclesX = [];
+// 		obstaclesY = [];
+//   }
 
-  reader.readAsText(files[0])
-}
+//   reader.readAsText(files[0])
+// }
 
-var input = document.querySelector('.file')
-document.addEventListener('change', process, false)
-/*---*/
+// var input = document.querySelector('.file')
+// document.addEventListener('change', process, false)
+// /*---*/
