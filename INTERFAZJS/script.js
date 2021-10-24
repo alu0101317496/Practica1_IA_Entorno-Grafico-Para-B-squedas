@@ -20,7 +20,7 @@ var spritesheetLoaded = false;
 var world = [[]];
 
 // ----------------------------------------------------------------------------------------------------------------------------
-// auxiliar value that switches between 0 and 1 if the user click the first 
+// auxiliar value that switches between 0 and 1 if the user click the first
 // time (initial node) or the second (end node)
 var path = 0;
 
@@ -182,7 +182,7 @@ function redrawPath() {
 			currentPath[rp][0] * tileWidth,
 			currentPath[rp][1] * tileHeight,
 			tileWidth, tileHeight);
-	}	
+	}
 }
 
 // clear the old path
@@ -206,7 +206,7 @@ function clearPath() {
 			currentPath[rp][0] * tileWidth,
 			currentPath[rp][1] * tileHeight,
 			tileWidth, tileHeight);
-	}	
+	}
 }
 
 // clear the world
@@ -335,9 +335,21 @@ function canvasClick(e) {
 
 // world is a 2d array of integers
 // pathStart and pathEnd are arrays like [5,10]
-function findPath(world, pathStart, pathEnd) {
+
+//#################################################################
+//#                                                               #
+//#                                                               #
+//#                                                               #
+//#                     CALCULATE THE PATH A*                     #
+//#                                                               #
+//#                                                               #
+//#                                                               #
+//#################################################################
+
+function findPath(world, pathStart, pathEnd) 
+{
 	// shortcuts for speed
-	var abs = Math.abs;
+	var abs = function (a) {if(a < 0) return -a; else return a;} //LAMBDA function for not dealing with some runtime garbage
 
 	// keep track of the world dimensions
 	var worldSize = worldWidth * worldHeight;
@@ -348,18 +360,21 @@ function findPath(world, pathStart, pathEnd) {
 
 	// distanceFunction functions
 	// these return how far away a point is to another (source to destination)
-	function ManhattanDistance(Point, Goal) {
+	function ManhattanDistance(Point, Goal) 
+    {
 		return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
 	}
-	
-	function EuclideanDistance(Point, Goal) {
-		return Math.sqrt((abs(Goal.x - Point.x)) * (abs(Goal.x - Point.x)) + 
+
+	function EuclideanDistance(Point, Goal) 
+    {
+		return Math.sqrt((abs(Goal.x - Point.x)) * (abs(Goal.x - Point.x)) +
 						 (abs(Goal.y - Point.y)) * (abs(Goal.y - Point.y)));
 	}
 
 	// Returns every available North, South, East or West
 	// cell that is empty. No diagonals,
-	function Neighbours(x, y) {
+	function Neighbours(x, y) 
+    {
 		// declare de directions (N, S, E, W) and match them only if 
 		// the booleans respectively are true
 		var N = y - 1,
@@ -372,34 +387,24 @@ function findPath(world, pathStart, pathEnd) {
 			myW = W > -1 && canWalkHere(W, y),
 			result = [];
 		if (myN)
-			result.push(
-			{
-				x: x,
-				y: N
-			});
+			result.push({x: x,
+                         y: N});
 		if (myE)
-			result.push(
-			{
-				x: E,
-				y: y
-			});
+			result.push({x: E,
+                         y: y});
 		if (myS)
-			result.push(
-			{
-				x: x,
-				y: S
-			});
+			result.push({x: x,
+				         y: S});
 		if (myW)
-			result.push(
-			{
-				x: W,
-				y: y
-			});
+			result.push({x: W,
+                         y: y});
+
 		return result;
 	}
 
 	// returns boolean value (world cell is available and open)
-	function canWalkHere(x, y) {
+	function canWalkHere(x, y) 
+    {
 		return ((world[x]    != null) &&
 				(world[x][y] != null) &&
 				(world[x][y] == 0));
@@ -407,36 +412,34 @@ function findPath(world, pathStart, pathEnd) {
 
 	// Node function, returns a new object with Node properties
 	// Used in the calculatePath function to store route costs, etc.
-	function Node(Parent, Point) {
-		var newNode = {
-			// pointer to another Node object
-			Parent: Parent,
-			// array index of this Node in the world (linear array)
-			value: Point.x + (Point.y * worldWidth),
-			// the location coordinates of this Node
-			x: Point.x,
-			y: Point.y,
-			// the heuristic estimated cost of an entire path using this node
-			f: 0,
-			// the cost to get from the starting point to this node
-			g: 0,
-			// the distanceFunction cost to get from this node to the destination node
-			h: 0
+	function Node(Parent, Point) 
+    {
+		var newNode = 
+        {
+            Parent: Parent,                                 //Parent: pointer to another Node object
+			value: Point.x + (Point.y * worldWidth),        //value: array index of this Node in the world (linear array)
+			x: Point.x,                                     //x: the x location coordinates of this Node
+			y: Point.y,                                     //y: the y location coordinates of this Node
+			f: 0,                                           //f: the heuristic estimated cost of an entire path using this node
+			g: 0,                                           //g: the cost to get from the starting point to this node
+			h: 0                                            //h: the distanceFunction cost to get from this node to the destination node
 		};
 		return newNode;
 	}
 
 	// Path function, executes AStar algorithm operations
-	function calculatePath() {
+	function calculatePath() 
+    {
 		// create Nodes from the Start and End x, y coordinates
-		var mypathStart = Node(null, {
-			x: pathStart[0],
-			y: pathStart[1]
-		});
-		var mypathEnd = Node(null, {
-			x: pathEnd[0],
-			y: pathEnd[1]
-		});
+		var mypathStart = Node(null, 
+                               {x: pathStart[0],
+                                y: pathStart[1]});
+
+		var mypathEnd = Node(null, 
+                             {x: pathEnd[0],
+			                 y: pathEnd[1]});
+
+
 		var AStar = new Array(worldSize);		// create an array that will contain all world cells
 		var Open = [mypathStart];				// list of currently open Nodes
 		var Closed = [];						// list of closed Nodes
@@ -447,11 +450,14 @@ function findPath(world, pathStart, pathEnd) {
 		var length, max, min, i, j;				// temp integer variables used in the calculations
 
 		// iterate through the open list until none are left
-		while (length = Open.length) {			
+		while (length = Open.length) 
+        {
 			max = worldSize;
 			min = -1;
-			for (i = 0; i < length; i++) {
-				if (Open[i].f < max) {
+			for (i = 0; i < length; i++) 
+            {
+				if (Open[i].f < max) 
+                {
 					max = Open[i].f;
 					min = i;
 				}
@@ -462,9 +468,11 @@ function findPath(world, pathStart, pathEnd) {
 			// The strict equality operator (===) checks whether its two operands are equal, 
 			// returning a Boolean result. Unlike the equality operator, the strict equality 
 			// operator always considers operands of different types to be different.
-			if (myNode.value === mypathEnd.value) {
+			if (myNode.value === mypathEnd.value) 
+            {
 				myPath = Closed[Closed.push(myNode) - 1];
-				do {
+				do 
+                {
 					result.push([myPath.x, myPath.y]);
 				}
 				while (myPath = myPath.Parent);
@@ -474,7 +482,8 @@ function findPath(world, pathStart, pathEnd) {
 				result.reverse();
 				pathFound = true;
 			}
-			else { // not the destination
+			else 
+            { // not the destination
 				// find which nearby nodes are walkable
 				myNeighbours = Neighbours(myNode.x, myNode.y);
 				// test each one that hasn't been tried already
@@ -494,8 +503,93 @@ function findPath(world, pathStart, pathEnd) {
 				// remember this route as having no more untested options
 				Closed.push(myNode);
 			}
-		} // keep iterating until the Open list is empty
+		} //END OF WHILE -- keep iterating until the Open list is empty
 		return result;
 	}
 	return calculatePath();
+} // END OF FINDPATH
+
+//#################################################################
+//#                                                               #
+//#                                                               #
+//#                                                               #
+//#                     END OF A* ALGORITHM                       #
+//#                                                               #
+//#                                                               #
+//#                                                               #
+//#################################################################
+
+
+var obstaclesX = []; //File vector for X positions
+var obstaclesY = []; //File vector for Y positions
+var selector = 0; //Aux to choose X or Y file positions
+
+function pushObstacleX(string) {
+	obstaclesX.push(string)
 }
+
+function pushObstacleY(string) {
+	obstaclesY.push(string)
+}
+
+
+function process(event) {
+  var files = event.target.files
+  var reader = new FileReader()
+
+  reader.onload = function() {
+    var contents = this.result
+
+    for (let j = 0; j < contents.length; j++) {
+      //Initialize variable
+      var string = '';
+
+      //Initialize string
+      if (contents.substr(j, 1) >= '0' && contents.substr(j, 1) <='9' ) {
+        do {
+          string += contents.substr(j, 1); //Grow string if posible
+          j++;
+        }
+        while (contents.substr(j, 1) >= '0' && contents.substr(j, 1) <='9') //Check if the string is followed by numbers
+
+				//Choose to what vector push the string: X(pair) Y(odd)
+        if (selector % 2 == 0) {
+          pushObstacleX(string)
+        } else {
+          pushObstacleY(string)
+        }
+
+				//Upgrade selector
+        selector++;
+      }
+    }
+
+		//If there are uneven numbers (One X without Y), unuse the last X
+    if (obstaclesX.length > obstaclesY.length) {
+      obstaclesX.pop();
+    }
+
+    console.log(obstaclesX, obstaclesX.length);
+    console.log(obstaclesY, obstaclesY.length);
+
+		//Signal what positions to change as wall and call redraw function
+		for (itr = 0; itr < obstaclesX.length; itr++) {
+			x = obstaclesX[itr];
+			y = obstaclesY[itr];
+			console.log("Posicion x:", x, "y:",y);
+
+			world[x] = [];
+		  world[x][y] = 1;
+			redrawWalls();
+
+		}
+		obstaclesX = [];
+		obstaclesY = [];
+  }
+
+  reader.readAsText(files[0])
+}
+
+var input = document.querySelector('.file')
+document.addEventListener('change', process, false)
+/*---*/
