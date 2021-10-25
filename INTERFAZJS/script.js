@@ -354,10 +354,11 @@ function findPath(world, pathStart, pathEnd)
 	// keep track of the world dimensions
 	var worldSize = worldWidth * worldHeight;
 
+    //##DISTANCES
     var distanceFunction = ((document.getElementById('HFunction').value) == 0) ? ManhattanDistance : EuclideanDistance;
-    console.log(HFunction)
+    console.log("Distance function: " + document.getElementById('HFunction').value)
 
-	// distanceFunction functions
+    // distanceFunction functions
 	// these return how far away a point is to another (source to destination)
 	function ManhattanDistance(Point, Goal) 
     {
@@ -369,6 +370,26 @@ function findPath(world, pathStart, pathEnd)
 		return Math.sqrt((abs(Goal.x - Point.x)) * (abs(Goal.x - Point.x)) +
 						 (abs(Goal.y - Point.y)) * (abs(Goal.y - Point.y)));
 	}
+
+
+    //##DIRECTIONS
+    var Directions = ((document.getElementById('Directions').value) == 0) ? dir4 : dir8; 
+    console.log("Diagonals: " + document.getElementById('Directions').value)
+
+    //## 4 DIRECTIONS N, S, E, W
+    function dir4()
+    {
+
+    }
+
+    //## 8 DIRECTIONS N, NW, W, SW, S, SE, E, NE
+    function dir8()
+    {
+
+    }
+
+
+	
 
 	// Returns every available North, South, East or West
 	// cell that is empty. No diagonals,
