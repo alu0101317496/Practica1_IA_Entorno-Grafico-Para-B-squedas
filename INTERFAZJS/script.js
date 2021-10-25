@@ -348,15 +348,14 @@ function canvasClick(e) {
 
 function findPath(world, pathStart, pathEnd) 
 {
-	// shortcuts for speed
+    // shortcuts for speed
 	var abs = function (a) {if(a < 0) return -a; else return a;} //LAMBDA function for not dealing with some runtime garbage
 
 	// keep track of the world dimensions
 	var worldSize = worldWidth * worldHeight;
 
-	// which heuristic should we use?
-	// default: Manhattan (recommended)
-	var distanceFunction = ManhattanDistance;
+    var distanceFunction = ((document.getElementById('HFunction').value) == 0) ? ManhattanDistance : EuclideanDistance;
+    console.log(HFunction)
 
 	// distanceFunction functions
 	// these return how far away a point is to another (source to destination)
