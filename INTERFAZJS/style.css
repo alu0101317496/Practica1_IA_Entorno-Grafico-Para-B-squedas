@@ -49,6 +49,14 @@ div {
   font-size: 16px;
 }
 
+.Selection {
+  color: var(--white);
+  background-color: var(--black);
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
 /* .ApplyButton {
   background-color: Green;
   border: none;
