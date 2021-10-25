@@ -17,17 +17,28 @@
     <div>
       <p>
         <div class="Inputs">
+
           World Width value:
           <input min="0" class = "Input" type = "number" value = "10" id="Width"></input> <br>
+
           World Height value:
           <input min="0" class = "Input" type = "number" value = "10" id="Height"></input> <br><br>
+
           Percentage of obstacles:
           <input min="0" max="100" class = "Input" type="number" value="30" id="Percentage"></input><br><br>
+
           Heuristic function:
           <select class = "Selection" id ="Heuristic_type">
             <option value="0">Manhattan</option>
             <option value="1">Euclidean</option>
           </select><br><br>
+
+          Posible directions:
+          <select class = "Selection" id ="Directions">
+            <option value="0">Without diagonals</option>
+            <option value="1">With diagonals</option>
+          </select><br><br>
+
         </div>
         <div class="Buttons">
           <button class = "ApplyButton" onclick="SetWorld()" id="WorldBuild">Apply</button>
