@@ -376,21 +376,6 @@ function findPath(world, pathStart, pathEnd)
     var Directions = ((document.getElementById('Directions').value) == 0) ? dir4 : dir8; 
     console.log("Diagonals: " + document.getElementById('Directions').value)
 
-    //## 4 DIRECTIONS N, S, E, W
-    function dir4()
-    {
-
-    }
-
-    //## 8 DIRECTIONS N, NW, W, SW, S, SE, E, NE
-    function dir8()
-    {
-
-    }
-
-
-	
-
 	// Returns every available North, South, East or West
 	// cell that is empty. No diagonals,
 	function Neighbours(x, y) 
@@ -414,7 +399,24 @@ function findPath(world, pathStart, pathEnd)
 		if (canWalkHere(W, y))
 			result.push({x: W,
                          y: y});
+		
+		if (Directions == '1') {
+			if (canWalkHere(W, N))
+				result.push({x: W,
+							y: N});
 
+			if (canWalkHere(E, N))
+				result.push({x: E,
+							y: N});
+
+			if (canWalkHere(W, S))
+				result.push({x: W,
+							y: S});
+
+			if (canWalkHere(E, S))
+				result.push({x: E,
+							y: S});			
+		}
 		return result;
 	}
 
