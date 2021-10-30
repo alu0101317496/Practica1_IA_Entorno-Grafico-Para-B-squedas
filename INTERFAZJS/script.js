@@ -374,7 +374,7 @@ function findPath(world, pathStart, pathEnd)
 
 
     //##DIRECTIONS
-    var Directions = ((document.getElementById('Directions').value) == 0) ? dir4 : dir8;
+    var Directions = document.getElementById('Directions').value;
     console.log("Diagonals: " + document.getElementById('Directions').value)
 
 	// Returns every available North, South, East or West
@@ -388,33 +388,33 @@ function findPath(world, pathStart, pathEnd)
 			E = x + 1,
 			W = x - 1,
 			result = [];
-		if (canWalkHere(x, N))
+		if (AvCell(x, N))
 			result.push({x: x,
                          y: N});
-		if (canWalkHere(E, y))
+		if (AvCell(E, y))
 			result.push({x: E,
                          y: y});
-		if (canWalkHere(x, S))
+		if (AvCell(x, S))
 			result.push({x: x,
 				         y: S});
-		if (canWalkHere(W, y))
+		if (AvCell(W, y))
 			result.push({x: W,
                          y: y});
 
 		if (Directions == '1') {
-			if (canWalkHere(W, N))
+			if (AvCell(W, N))
 				result.push({x: W,
 							y: N});
 
-			if (canWalkHere(E, N))
+			if (AvCell(E, N))
 				result.push({x: E,
 							y: N});
 
-			if (canWalkHere(W, S))
+			if (AvCell(W, S))
 				result.push({x: W,
 							y: S});
 
-			if (canWalkHere(E, S))
+			if (AvCell(E, S))
 				result.push({x: E,
 							y: S});
 		}
@@ -422,13 +422,13 @@ function findPath(world, pathStart, pathEnd)
 	}
 
 	// returns boolean value (world cell is available and open)
-	function canWalkHere(x, y)
+	function AvCell(x, y)
     {
 		return ((world[x]    != null) &&
 				(world[x][y] != null) &&
 				(x > -1 && x < worldHeight) &&
 				(y > -1 && y < worldWidth ) &&
-				(world[x][y] == 0));
+				(world[x][y] == 0)); //Empty cell value
 	};
 
 	// Node function, returns a new object with Node properties
