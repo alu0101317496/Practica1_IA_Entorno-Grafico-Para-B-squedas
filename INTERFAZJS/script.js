@@ -19,7 +19,6 @@ var spritesheetLoaded = false;
 // the world grid (2d array of tiles)
 var world = [[]];
 
-var dir4, dir8
 // ----------------------------------------------------------------------------------------------------------------------------
 // auxiliar value that switches between 0 and 1 if the user click the first
 // time (initial node) or the second (end node)
@@ -298,8 +297,10 @@ function canvasClick(e) {
 	];
 
 	// Prevent placing inside obstacle
-	if (world[cell[0]][cell[1]] == 0) {
-		if (!path) {
+	if (world[cell[0]][cell[1]] == 0) 
+    {
+		if (!path) 
+        {
 			// remove old path
 			pathStart = cell;
 			pathEnd = cell;
@@ -318,8 +319,11 @@ function canvasClick(e) {
 		}
 		//Se han seteado bien los valores de inicio y de final
 		// calculate path
+        //**### CALCULATE TIME
+        console.time('algorithm');
 		currentPath = findPath(world, pathStart, pathEnd);
-	}
+        console.timeEnd('algorithm');
+    }
 	else {
 		clearPath();
 		alert("This is an obtacle");
@@ -421,7 +425,7 @@ function findPath(world, pathStart, pathEnd)
 		return result;
 	}
 
-	// returns boolean value (world cell is available and open)
+	// returns boolean value (world cell is available and open) Available Cell
 	function AvCell(x, y)
     {
 		return ((world[x]    != null) &&
@@ -433,7 +437,7 @@ function findPath(world, pathStart, pathEnd)
 
 	// Node function, returns a new object with Node properties
 	// Used in the calculatePath function to store route costs, etc.
-	function Node(Parent, Point)
+	function Node(Parent, Point) //CREATES A NODE WITH PARENT AND THE POSITION OF IT APPART OF IT'S VALUE
     {
 		var newNode =
         {
@@ -468,7 +472,8 @@ function findPath(world, pathStart, pathEnd)
 		var myNeighbours;						// reference to a Node (that is nearby)
 		var myNode;								// reference to a Node (that we are considering now)
 		var myPath;								// reference to a Node (that starts a path in question)
-		var max, min, i, j;				// temp integer variables used in the calculations
+		var max, min, i, j;				        // temp integer variables used in the calculations
+        var comparations = 0;                   // comparations done in time
 
 		// iterate through the open list until none are left
 		while (Open.length > 0)
@@ -480,6 +485,8 @@ function findPath(world, pathStart, pathEnd)
             {
 				if (Open[i].f < max)
                 {
+                    document.getElementById('comparation_counter').textContent = comparations;
+                    comparations++;
 					max = Open[i].f;
 					min = i;
 				}
@@ -533,6 +540,7 @@ function findPath(world, pathStart, pathEnd)
 		return result;
 	}
 	return calculatePath();
+
 } // END OF FINDPATH
 
 //#################################################################
