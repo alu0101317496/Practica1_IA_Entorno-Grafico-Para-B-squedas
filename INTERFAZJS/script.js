@@ -486,7 +486,6 @@ function findPath(world, pathStart, pathEnd)
 				if (Open[i].f < max)
                 {
                     document.getElementById('comparation_counter').textContent = comparations;
-                    comparations++;
 					max = Open[i].f;
 					min = i;
 				}
@@ -514,6 +513,8 @@ function findPath(world, pathStart, pathEnd)
 			}
 			else
             { // not the destination
+				// remember this route as having no more untested options
+				Closed.push(myNode);
 				// find which nearby nodes are walkable
 				myNeighbours = Neighbours(myNode.x, myNode.y);
 				// test each one that hasn't been tried already
@@ -529,12 +530,15 @@ function findPath(world, pathStart, pathEnd)
 						myPath.f = myPath.g + myPath.h;
 						// remember this new path for testing above
 						Open.push(myPath);
+						comparations++;
 						// mark this node in the world graph as visited
 						AStar[myPath.value] = true;
 					}
+					else if ((myNode.g) < (myPath.g + 1)) {
+						myNode.g = myPath.g + 1;
+						myNode.f = myNode.g + myNode.h;
+					}
 				}
-				// remember this route as having no more untested options
-				Closed.push(myNode);
 			}
 		} //END OF WHILE -- keep iterating until the Open list is empty
 		console.log("Path length: ", result.length);
