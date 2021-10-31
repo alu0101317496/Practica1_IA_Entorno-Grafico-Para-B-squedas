@@ -354,7 +354,7 @@ function canvasClick(e) {
 function findPath(world, pathStart, pathEnd)
 {
     // shortcuts for speed
-	var abs = function (a) {if(a < 0) return -a; else return a;} //LAMBDA function for not dealing with some runtime garbage
+	var abs = function (a) {if(a < 0) return -a; else return a;} //LAMBDA function for not dealing with some runtime libraries, -100ms 
 
 	// keep track of the world dimensions
 	var worldSize = worldWidth * worldHeight;
